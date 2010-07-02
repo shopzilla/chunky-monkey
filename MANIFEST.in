@@ -1,0 +1,3 @@
+include chunkymonkey/config/deployment.ini_tmpl
+recursive-include chunkymonkey/public *
+recursive-include chunkymonkey/templates *
