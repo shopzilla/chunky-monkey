@@ -48,25 +48,24 @@
 								% for i, chunk in enumerate(c.chunks):
 									<p>Chunk ${i} - ${chunk['sizeHex']}, ${chunk['size']} bytes <a href="javascript:toggle('chunk_content_${i}');">Raw Content</a></p>
 									<p id="chunk_content_${i}" style="display:none">
-										<textarea cols="120" rows="25">
-										% try:
-											${chunk['content'] | n,h}
-										% except:
-											Error reading chunk content
-										% endtry
-										</textarea>
+<textarea cols="120" rows="25">
+% try:
+${chunk['content'] | n,h}</textarea>
+% except:
+Error reading chunk</textarea>
+% endtry
 									</p>
 								% endfor
 							% else:
 								<p>No chunked encoding found <a href="javascript:toggle('responseBody');">Response Body</a></p>
 								<p id="responseBody" style="display:none">
-									<textarea cols="120" rows="25">
-									% try:
-										${c.body | n,h}
-									% except:
-										Error reading body
-									% endtry
-									</textarea>
+<textarea cols="120" rows="25">
+% try:
+${c.body | n,h}</textarea>
+% except:
+Error reading chunk</textarea>
+% endtry
+
 								</p>
 							% endif
 

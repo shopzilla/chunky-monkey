@@ -16,15 +16,22 @@ class ViewController(BaseController):
     def index(self):
     	q = request.params.get('q', None)
     	useragent = request.headers.get('User-Agent', None)
+    	
+    	c.result = False
+    	c.chunkedEncoding = True
+    	c.chunks = []
+    	c.body = ''
 		
     	if q:
 			url = urlparse(q)
-
+			
+			log.info(url)
+			
 			sock = socket(AF_INET, SOCK_STREAM)
 			sock.connect( (url.hostname, ( url.port if url.port else 80) ) )
-			httpRequest = 'GET %s HTTP/1.1\r\nHost: %s\r\nAccept: text/html\r\nUser-Agent: %s\r\n\r\n' % (url.path, url.hostname, useragent)
+			httpRequest = 'GET %s?%s HTTP/1.1\r\nHost: %s\r\nAccept: text/html\r\nUser-Agent: %s\r\n\r\n' % (url.path, url.query, url.hostname, useragent)
 			
-			log.info(httpRequest)
+			log.info('HTTP Request\n' + httpRequest)
 			
 			# Force it to timeout so we can detect the end of the stream
 			sock.settimeout(1)
@@ -47,8 +54,9 @@ class ViewController(BaseController):
 			
 			# Separate headers from body
 			headers, sep, body = content.partition('\r\n\r\n')
+
+			c.result = True
 			
-			c.chunkedEncoding = True
 			if headers.lower().find('content-length:') > -1:
 				c.chunkedEncoding = False
 				c.body = body
