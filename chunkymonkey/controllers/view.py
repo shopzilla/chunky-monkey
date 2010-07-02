@@ -15,13 +15,17 @@ class ViewController(BaseController):
 
     def index(self):
     	q = request.params.get('q', None)
-    	
+    	useragent = request.headers.get('User-Agent', None)
+		
     	if q:
 			url = urlparse(q)
 
 			sock = socket(AF_INET, SOCK_STREAM)
 			sock.connect( (url.hostname, ( url.port if url.port else 80) ) )
-			httpRequest = 'GET %s HTTP/1.1\r\nHost: %s\r\nAccept: text/html\r\n\r\n' % (url.path, url.hostname)
+			httpRequest = 'GET %s HTTP/1.1\r\nHost: %s\r\nAccept: text/html\r\nUser-Agent: %s\r\n\r\n' % (url.path, url.hostname, useragent)
+			
+			log.info(httpRequest)
+			
 			# Force it to timeout so we can detect the end of the stream
 			sock.settimeout(1)
 			sock.send(httpRequest)
@@ -38,21 +42,38 @@ class ViewController(BaseController):
 				total_data.append(data)
 			sock.close()
 
-			# Split the content first at CRLFCRLF (which separates headers from body)
-			# Then grab the body and split at CRLF which separates chunk size from chunk content
-			# content is an array of ( size1, chunk1, size2, chunk2, ..., sizeN, chunkN )
-			content = ''.join(total_data).split('\r\n\r\n')[1].split('\r\n')
+			# Combine all the data
+			content = ''.join(total_data)
 			
-			# Read chunk sizes and content pairs
-			chunks = []
-			index = 0	
-			while index < len(content):
-				sizeHex = content[index]
-				sizeInt = int(sizeHex, 16)
-				if sizeInt == 0: break
-				index = index + 1
-				chunks.append( {'sizeHex' : sizeHex, 'size' : sizeInt, 'content' : content[index]} )
-				index = index + 1
+			# Separate headers from body
+			headers, sep, body = content.partition('\r\n\r\n')
 			
-			c.chunks = chunks
+			c.chunkedEncoding = True
+			if headers.lower().find('content-length:') > -1:
+				c.chunkedEncoding = False
+				c.body = body
+			else:
+				# make content an array of ( size1, chunk1, size2, chunk2, ..., sizeN, chunkN )
+				content = body.split('\r\n')
+			
+				# Read chunk sizes and content pairs
+				chunks = []
+				index = 0	
+				while index < len(content):
+					value = content[index]
+					index = index + 1
+					try:
+						sizeInt = int(value, 16)
+					except:
+						# Handle the case where there is a rogue \r\n - we don't find a hex value
+						# Append it to the last chunk's content
+						lastChunk = chunks[len(chunks)-1]
+						lastChunk['conent'] = lastChunk['content'] + value
+						continue
+					if sizeInt == 0: break
+					chunks.append( {'sizeHex' : value, 'size' : sizeInt, 'content' : content[index]} )
+					index = index + 1
+			
+				c.chunks = chunks
+			
     	return render('/view.mako')
