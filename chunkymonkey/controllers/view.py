@@ -16,7 +16,6 @@ class ViewController(BaseController):
     def index(self):
     	q = request.params.get('q', None)
     	useragent = request.headers.get('User-Agent', None)
-    	
     	c.result = False
     	c.chunkedEncoding = True
     	c.chunks = []
