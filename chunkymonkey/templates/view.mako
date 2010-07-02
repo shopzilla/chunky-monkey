@@ -50,7 +50,7 @@
 									<p id="chunk_content_${i}" style="display:none">
 <textarea cols="120" rows="25">
 % try:
-${chunk['content'] | n,h}</textarea>
+${chunk['content'] | h}</textarea>
 % except:
 Error reading chunk</textarea>
 % endtry
@@ -61,7 +61,7 @@ Error reading chunk</textarea>
 								<p id="responseBody" style="display:none">
 <textarea cols="120" rows="25">
 % try:
-${c.body | n,h}</textarea>
+${c.body | h}</textarea>
 % except:
 Error reading chunk</textarea>
 % endtry
