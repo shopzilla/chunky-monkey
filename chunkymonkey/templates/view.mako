@@ -83,6 +83,11 @@ Error reading chunk</textarea>
         </div><!-- End Of templatemo_bottom_panel--> 
         <div id="templatemo_bottom_bottom"> 
         </div> 
+        <div id="templatemo_footer"> 
+        <a href="http://wiki.shopzilla.com/index.php?title=ChunkyMonkey" target="_parent">ChunkyMonkey Wiki</a> |
+        <a href="http://git.shopzilla.com/cgit/cgit.cgi/tools/chunkymonkey/" target="_parent">ChunkyMonkey Git Repo</a> |
+        <a href="http://hudson012.shopzilla.laxhq:8420/hudson/job/chunkymonkey/" target="_parent">ChunkyMonkey Builds</a>
+        </div>
         
     </div><!-- End Of Container --> 
 </body>
