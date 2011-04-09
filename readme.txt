@@ -1,3 +1,5 @@
+Chunk dumper is a Python utility for monitoring how chunks of a webpage are sent to the client browser,
+when the server flushes individual chunks to the client before the entire page has rendered.
 
-Original CSS Template found here:
-http://www.templatemo.com/templates/templatemo_184_brown/
+See http://tech.shopzilla.com
+
